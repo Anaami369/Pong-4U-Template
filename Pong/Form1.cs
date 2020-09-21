@@ -16,6 +16,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Threading;
 using System.Media;
+using System.Runtime.InteropServices;
 
 #endregion
 
@@ -26,7 +27,7 @@ namespace Pong
         #region global values
 
         //graphics objects for drawing
-        SolidBrush drawBrush = new SolidBrush(Color.White);
+        SolidBrush whiteBrush = new SolidBrush(Color.White);
         Font drawFont = new Font("Courier New", 10);
 
         // Sounds for game
@@ -38,7 +39,7 @@ namespace Pong
 
         // check to see if a new game can be started
         Boolean newGameOk = true;
-
+        
         //ball directions, speed, and rectangle
         Boolean ballMoveRight = true;
         Boolean ballMoveDown = true;
@@ -116,6 +117,11 @@ namespace Pong
             }
         }
 
+        private void startLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
         /// <summary>
         /// sets the ball and paddle positions for game start
         /// </summary>
@@ -144,23 +150,45 @@ namespace Pong
             p2.Y = this.Height / 2 - p2.Height / 2;
 
             // TODO set Width and Height of ball
-            // TODO set starting X position for ball to middle of screen, (use this.Width and ball.Width)
-            // TODO set starting Y position for ball to middle of screen, (use this.Height and ball.Height)
+            ball.Width = 20;
+            ball.Height = 20;
 
+            // TODO set starting X position for ball to middle of screen, (use this.Width and ball.Width)
+            ball.X = this.Width / 2 - ball.Width / 2;
+
+            // TODO set starting Y position for ball to middle of screen, (use this.Height and ball.Height)
+            ball.Y = this.Height / 2 - ball.Height / 2;
         }
 
         /// <summary>
         /// This method is the game engine loop that updates the position of all elements
         /// and checks for collisions.
         /// </summary>
-        private void gameUpdateLoop_Tick(object sender, EventArgs e)
+        private object gameUpdateLoop_Tick(object sender, EventArgs e)
         {
             #region update ball position
 
             // TODO create code to move ball either left or right based on ballMoveRight and using BALL_SPEED
+            if (ballMoveRight == true)
+            {
+                ball.X = ball.X + BALL_SPEED;
+            }
+
+            else
+            {
+                ball.X = ball.X - BALL_SPEED;
+            }
 
             // TODO create code move ball either down or up based on ballMoveDown and using BALL_SPEED
+            if (ballMoveDown == true)
+            {
+                ball.Y = ball.Y - BALL_SPEED;
+            }
 
+            else
+            {
+                ball.Y = ball.Y + BALL_SPEED;
+            }
             #endregion
 
             #region update paddle positions
@@ -168,13 +196,26 @@ namespace Pong
             if (aKeyDown == true && p1.Y > 0)
             {
                 // TODO create code to move player 1 paddle up using p1.Y and PADDLE_SPEED
+                p1.Y = p1.Y - PADDLE_SPEED;
             }
 
             // TODO create an if statement and code to move player 1 paddle down using p1.Y and PADDLE_SPEED
+            if (zKeyDown == true && p1.Y > 0)
+            {
+                p1.Y = p1.Y + PADDLE_SPEED;
+            }
 
             // TODO create an if statement and code to move player 2 paddle up using p2.Y and PADDLE_SPEED
+            if(jKeyDown == true && p2.Y > 0)
+            {
+                p2.Y = p2.Y - PADDLE_SPEED;
+            }
 
             // TODO create an if statement and code to move player 2 paddle down using p2.Y and PADDLE_SPEED
+            if (mKeyDown == true && p2.Y > 0)
+            {
+                p2.Y = p2.Y + PADDLE_SPEED;
+            }
 
             #endregion
 
@@ -183,23 +224,43 @@ namespace Pong
             if (ball.Y < 0) // if ball hits top line
             {
                 // TODO use ballMoveDown boolean to change direction
+                ballMoveDown = false;
+
                 // TODO play a collision sound
+                collisionSound.Play();
+
             }
             // TODO In an else if statement use ball.Y, this.Height, and ball.Width to check for collision with bottom line
-            // If true use ballMoveDown down boolean to change direction
+            else if (ball.Y > this.Height)
+            {
+                // If true use ballMoveDown down boolean to change direction
+                ballMoveDown = true;
 
+            }
             #endregion
 
             #region ball collision with paddles
 
             // TODO create if statment that checks p1 collides with ball and if it does
-                 // --- play a "paddle hit" sound and
-                 // --- use ballMoveRight boolean to change direction
+            if (p1.Y == ball.Y)
+            {
+                // --- play a "paddle hit" sound and
+
+                // --- use ballMoveRight boolean to change direction
+                ballMoveRight = true;
+            }
+
 
             // TODO create if statment that checks p2 collides with ball and if it does
+            if (p2.Y == ball.Y)
+            {
                 // --- play a "paddle hit" sound and
+
                 // --- use ballMoveRight boolean to change direction
-            
+                ballMoveRight = false;
+            }
+
+
             /*  ENRICHMENT
              *  Instead of using two if statments as noted above see if you can create one
              *  if statement with multiple conditions to play a sound and change direction
@@ -247,9 +308,12 @@ namespace Pong
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            // TODO draw paddles using FillRectangle
+            // draw paddles using FillRectangle
+            e.Graphics.FillRectangle(whiteBrush, p1);
+            e.Graphics.FillRectangle(whiteBrush, p2);
 
-            // TODO draw ball using FillRectangle
+            // draw ball using FillRectangle
+            e.Graphics.FillRectangle(whiteBrush, ball);
 
             // TODO draw scores to the screen using DrawString
         }
