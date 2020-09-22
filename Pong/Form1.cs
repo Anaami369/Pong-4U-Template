@@ -43,11 +43,11 @@ namespace Pong
         //ball directions, speed, and rectangle
         Boolean ballMoveRight = true;
         Boolean ballMoveDown = true;
-        const int BALL_SPEED = 4;
+        int BALL_SPEED = 4;
         Rectangle ball;
 
         //paddle speeds and rectangles
-        const int PADDLE_SPEED = 4;
+        int PADDLE_SPEED = 4;
         Rectangle p1, p2;
 
         //player and game scores
@@ -249,6 +249,8 @@ namespace Pong
 
                 // --- use ballMoveRight boolean to change direction
                 ballMoveRight = true;
+                BALL_SPEED++;
+                PADDLE_SPEED++;
             }
 
 
@@ -260,6 +262,8 @@ namespace Pong
 
                 // --- use ballMoveRight boolean to change direction
                 ballMoveRight = false;
+                BALL_SPEED++;
+                PADDLE_SPEED++;
             }
 
 
@@ -281,13 +285,14 @@ namespace Pong
                 // --- update player 2 score
                 player2Score ++;
                 player2.Text = "player 2:" + player2Score;
+                
 
                 // TODO use if statement to check to see if player 2 has won the game. If true run 
                 if (player2Score >= 3)
                 {
                     // GameOver method. Else change direction of ball and call SetParameters method.
                     startLabel.Visible = true;
-                    GameOver("winner");
+                    GameOver("player 2 wins");
                 }
                 else
                 {
@@ -312,7 +317,7 @@ namespace Pong
                 {
                     // GameOver method. Else change direction of ball and call SetParameters method.
                     startLabel.Visible = true;
-                    GameOver("winner");
+                    GameOver("player 1 wins");
                 }
 
                 else { 
@@ -342,6 +347,7 @@ namespace Pong
             // --- show a message on the startLabel to indicate a winner, (need to Refresh).
             startLabel.Visible = true;
             startLabel.Text = winner;
+            startLabel.Refresh();
 
             // --- pause for two seconds 
             Thread.Sleep(2000);
@@ -350,14 +356,7 @@ namespace Pong
             startLabel.Refresh();
             startLabel.Text = "Do you want to play again? Press Y for yes and N for no";
 
-            if (yKeyDown)
-            {
-                newGameOk = true;
-            }
-            else if (nKeyDown)
-            {
-                newGameOk = false;
-            }
+           
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
