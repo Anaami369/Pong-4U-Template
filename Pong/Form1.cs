@@ -35,7 +35,7 @@ namespace Pong
         SoundPlayer collisionSound = new SoundPlayer(Properties.Resources.collision);
 
         //determines whether a key is being pressed or not
-        Boolean aKeyDown, zKeyDown, jKeyDown, mKeyDown;
+        Boolean aKeyDown, zKeyDown, jKeyDown, mKeyDown, yKeyDown, nKeyDown;
 
         // check to see if a new game can be started
         Boolean newGameOk = true;
@@ -117,7 +117,7 @@ namespace Pong
             }
         }
 
-        private void startLabel_Click(object sender, EventArgs e)
+        private void Form1_Load(object sender, EventArgs e)
         {
 
         }
@@ -164,7 +164,7 @@ namespace Pong
         /// This method is the game engine loop that updates the position of all elements
         /// and checks for collisions.
         /// </summary>
-        private object gameUpdateLoop_Tick(object sender, EventArgs e)
+        private void gameUpdateLoop_Tick(object sender, EventArgs e)
         {
             #region update ball position
 
@@ -242,9 +242,10 @@ namespace Pong
             #region ball collision with paddles
 
             // TODO create if statment that checks p1 collides with ball and if it does
-            if (p1.Y == ball.Y)
+            if (ball.IntersectsWith(p1))
             {
                 // --- play a "paddle hit" sound and
+                scoreSound.Play();
 
                 // --- use ballMoveRight boolean to change direction
                 ballMoveRight = true;
@@ -252,9 +253,10 @@ namespace Pong
 
 
             // TODO create if statment that checks p2 collides with ball and if it does
-            if (p2.Y == ball.Y)
+            if (ball.IntersectsWith(p2))
             {
                 // --- play a "paddle hit" sound and
+                scoreSound.Play();
 
                 // --- use ballMoveRight boolean to change direction
                 ballMoveRight = false;
@@ -274,17 +276,52 @@ namespace Pong
             {
                 // TODO
                 // --- play score sound
+                scoreSound.Play();
+
                 // --- update player 2 score
+                player2Score ++;
+                player2.Text = "player 2:" + player2Score;
 
                 // TODO use if statement to check to see if player 2 has won the game. If true run 
-                // GameOver method. Else change direction of ball and call SetParameters method.
+                if (player2Score >= 3)
+                {
+                    // GameOver method. Else change direction of ball and call SetParameters method.
+                    startLabel.Visible = true;
+                    GameOver("winner");
+                }
+                else
+                {
+                    SetParameters();
+                }
 
             }
 
             // TODO same as above but this time check for collision with the right wall
+            if (ball.X > this.Width)  // ball hits right wall logic
+            {
+                // TODO
+                // --- play score sound
+                scoreSound.Play();
 
+                // --- update player 1 score
+                player1Score++;
+                player1.Text = "player 1:" + player1Score;
+
+                // TODO use if statement to check to see if player 2 has won the game. If true run 
+                if (player1Score == 3)
+                {
+                    // GameOver method. Else change direction of ball and call SetParameters method.
+                    startLabel.Visible = true;
+                    GameOver("winner");
+                }
+
+                else { 
+                    SetParameters();
+                }
+
+            }
             #endregion
-            
+
             //refresh the screen, which causes the Form1_Paint method to run
             this.Refresh();
         }
@@ -300,10 +337,27 @@ namespace Pong
 
             // TODO create game over logic
             // --- stop the gameUpdateLoop
-            // --- show a message on the startLabel to indicate a winner, (need to Refresh).
-            // --- pause for two seconds 
-            // --- use the startLabel to ask the user if they want to play again
+            gameUpdateLoop.Enabled = false;
 
+            // --- show a message on the startLabel to indicate a winner, (need to Refresh).
+            startLabel.Visible = true;
+            startLabel.Text = winner;
+
+            // --- pause for two seconds 
+            Thread.Sleep(2000);
+
+            // --- use the startLabel to ask the user if they want to play again
+            startLabel.Refresh();
+            startLabel.Text = "Do you want to play again? Press Y for yes and N for no";
+
+            if (yKeyDown)
+            {
+                newGameOk = true;
+            }
+            else if (nKeyDown)
+            {
+                newGameOk = false;
+            }
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
